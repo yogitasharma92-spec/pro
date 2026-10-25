@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#101010">
+    <title>Spotify Phone Remote</title>
+
+    <style>
+        :root {
+            --green: #1ed760;
+            --bg: #101010;
+            --card: #1c1c1c;
+            --muted: #a7a7a7;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: radial-gradient(circle at top, #193b29, var(--bg) 48%);
+            color: white;
+            font-family: Arial, Helvetica, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 18px;
+        }
+
+        .app {
+            width: 100%;
+            max-width: 410px;
+            background: rgba(28, 28, 28, .97);
+            border: 1px solid #343434;
+            border-radius: 25px;
+            padding: 25px;
+            box-shadow: 0 20px 70px #0009;
+        }
+
+        .brand {
+            text-align: center;
+            font-size: 25px;
+            font-weight: 800;
+            margin-bottom: 5px;
+        }
+
+        .brand span {
+            color: var(--green);
+        }
+
+        .subtitle {
+            color: var(--muted);
+            text-align: center;
+            font-size: 13px;
+            margin-bottom: 23px;
+        }
+
+        .status {
+            background: #292929;
+            color: #ddd;
+            padding: 11px;
+            border-radius: 10px;
+            font-size: 12px;
+            text-align: center;
+            margin-bottom: 16px;
+            overflow-wrap: anywhere;
+        }
+
+        button,
+        select {
+            font: inherit;
+        }
+
+        button {
+            border: 0;
+            cursor: pointer;
+            transition: transform .12s, background .15s;
+        }
+
+        button:active {
+            transform: scale(.96);
+        }
+
+        button:disabled {
+            opacity: .45;
+            cursor: not-allowed;
+        }
+
+        .login {
+            width: 100%;
+            background: var(--green);
+            color: black;
+            border-radius: 30px;
+            padding: 15px;
+            font-weight: bold;
+            font-size: 15px;
+        }
+
+        .login:hover {
+            background: #36e878;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .label {
+            display: block;
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 8px;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #444;
+            color: white;
+            background: #292929;
+            margin-bottom: 20px;
+        }
+
+        .art {
+            width: 210px;
+            height: 210px;
+            max-width: 75%;
+            aspect-ratio: 1;
+            margin: 0 auto 22px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #254f35, #121212);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: 0 12px 35px #0007;
+        }
+
+        .art img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .music-note {
+            font-size: 65px;
+            color: var(--green);
+        }
+
+        .track-title {
+            font-size: 21px;
+            font-weight: bold;
+            text-align: center;
+            overflow-wrap: anywhere;
+            margin-bottom: 7px;
+        }
+
+        .artist {
+            color: var(--muted);
+            text-align: center;
+            font-size: 14px;
+            margin-bottom: 23px;
+        }
+
+        .progress {
+            width: 100%;
+            accent-color: var(--green);
+            cursor: pointer;
+        }
+
+        .times {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 5px;
+        }
+
+        .controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 17px;
+            margin: 22px 0;
+        }
+
+        .control {
+            width: 49px;
+            height: 49px;
+            border-radius: 50%;
+            color: white;
+            background: #333;
+            font-size: 19px;
+        }
+
+        .control:hover {
+            background: #484848;
+        }
+
+        .play {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            color: black;
+            background: var(--green);
+            font-size: 25px;
+        }
+
+        .play:hover {
+            background: #42ed7b;
+        }
+
+        .seek-controls {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .seek {
+            flex: 1;
+            background: #303030;
+            color: white;
+            padding: 13px 8px;
+            border-radius: 12px;
+            font-size: 13px;
+        }
+
+        .seek:hover {
+            background: #414141;
+        }
+
+        .refresh,
+        .logout {
+            padding: 11px;
+            border-radius: 10px;
+            background: transparent;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .refresh {
+            color: var(--green);
+        }
+
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .help {
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1.5;
+            margin-top: 17px;
+        }
+    </style>
+</head>
+
+<body>
+    <main class="app">
+
+        <div class="brand">♫ Spotify <span>Remote</span></div>
+        <div class="subtitle">Control your music from another phone</div>
+
+        <div id="status" class="status" role="status">
+            Connect your Spotify account to begin.
+        </div>
+
+        <section id="loginSection">
+            <button id="loginBtn" class="login">Continue with Spotify</button>
+            <p class="help">
+                Sign in with the Spotify account that is playing music on your other phone.
+            </p>
+        </section>
+
+        <section id="playerSection" class="hidden">
+
+            <label class="label" for="deviceSelect">PLAYBACK DEVICE</label>
+            <select id="deviceSelect">
+                <option value="">Loading devices...</option>
+            </select>
+
+            <div class="art">
+                <img id="cover" class="hidden" alt="Album artwork">
+                <div id="placeholder" class="music-note">♫</div>
+            </div>
+
+            <div id="trackTitle" class="track-title">Nothing playing</div>
+            <div id="artist" class="artist">Start Spotify on Phone A</div>
+
+            <input id="progress" class="progress" type="range" min="0" max="1000" value="0"
+                aria-label="Seek through track">
+
+            <div class="times">
+                <span id="currentTime">0:00</span>
+                <span id="duration">0:00</span>
+            </div>
+
+            <div class="controls">
+                <button id="prevBtn" class="control" aria-label="Previous track">|◀</button>
+                <button id="playBtn" class="play" aria-label="Play">▶</button>
+                <button id="nextBtn" class="control" aria-label="Next track">▶|</button>
+            </div>
+
+            <div class="seek-controls">
+                <button id="backBtn" class="seek">↶ −10 sec</button>
+                <button id="forwardBtn" class="seek">+10 sec ↷</button>
+            </div>
+
+            <div class="footer">
+                <button id="refreshBtn" class="refresh">↻ Refresh</button>
+                <button id="logoutBtn" class="logout">Log out</button>
+            </div>
+
+            <p class="help">
+                Commands control Spotify through its official API. Phone A must appear
+                in your available Spotify devices. Playback control generally requires
+                Spotify Premium.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        "use strict";
+
+        /*
+          SETUP:
+          1. Create an app at https://developer.spotify.com/dashboard
+          2. Copy its Client ID below.
+          3. Add your exact deployed URL as a Redirect URI in Spotify settings.
+          4. Open this page using that same URL, sign in, and select Phone A.
+        
+          Use a deployed HTTPS URL or a local development server.
+          Do not open this file directly with file://.
+        */
+
+        const CLIENT_ID = "PASTE_YOUR_SPOTIFY_CLIENT_ID_HERE";
+
+        const REDIRECT_URI = window.location.origin + window.location.pathname;
+
+        const SCOPES = [
+            "user-read-playback-state",
+            "user-read-currently-playing",
+            "user-modify-playback-state"
+        ].join(" ");
+
+        const API = "https://api.spotify.com/v1";
+
+        const $ = id => document.getElementById(id);
+
+        let accessToken = null;
+        let refreshToken = null;
+        let expiresAt = 0;
+        let selectedDevice = "";
+        let playback = null;
+        let pollTimer = null;
+        let progressTimer = null;
+        let busy = false;
+        let seeking = false;
+        let statusMessage = "";
+        let statusIsError = false;
+
+        function setStatus(message, isError = false) {
+            statusMessage = message;
+            statusIsError = isError;
+            $("status").textContent = message;
+            $("status").style.color = isError ? "#ff7777" : "#ddd";
+        }
+
+        function showPlayer(show) {
+            $("loginSection").classList.toggle("hidden", show);
+            $("playerSection").classList.toggle("hidden", !show);
+        }
+
+        function base64url(bytes) {
+            let binary = "";
+            bytes.forEach(byte => binary += String.fromCharCode(byte));
+            return btoa(binary)
+                .replace(/\+/g, "-")
+                .replace(/\//g, "_")
+                .replace(/=+$/g, "");
+        }
+
+        function randomString(length = 64) {
+            const bytes = new Uint8Array(length);
+            crypto.getRandomValues(bytes);
+            return base64url(bytes);
+        }
+
+        async function sha256(value) {
+            const bytes = new TextEncoder().encode(value);
+            return new Uint8Array(await crypto.subtle.digest("SHA-256", bytes));
+        }
+
+        async function login() {
+            if (CLIENT_ID.includes("PASTE_YOUR")) {
+                setStatus("First add your Spotify Client ID in the code.", true);
+                return;
+            }
+
+            if (!window.isSecureContext && location.hostname !== "localhost") {
+                setStatus("Use HTTPS to sign in securely.", true);
+                return;
+            }
+
+            try {
+                const verifier = randomString(64);
+                const challenge = base64url(await sha256(verifier));
+                const state = randomString(32);
+
+                sessionStorage.setItem("spotify_verifier", verifier);
+                sessionStorage.setItem("spotify_state", state);
+
+                const params = new URLSearchParams({
+                    client_id: CLIENT_ID,
+                    response_type: "code",
+                    redirect_uri: REDIRECT_URI,
+                    scope: SCOPES,
+                    state,
+                    code_challenge_method: "S256",
+                    code_challenge: challenge
+                });
+
+                location.assign(
+                    "https://accounts.spotify.com/authorize?" + params.toString()
+                );
+            } catch (error) {
+                setStatus("Unable to start secure login: " + error.message, true);
+            }
+        }
+
+        async function exchangeCode(code) {
+            const expectedState = sessionStorage.getItem("spotify_state");
+            const receivedState = new URLSearchParams(location.search).get("state");
+            const verifier = sessionStorage.getItem("spotify_verifier");
+
+            if (!expectedState || !receivedState ||
+                expectedState !== receivedState || !verifier) {
+                throw new Error("Login verification failed. Please sign in again.");
+            }
+
+            sessionStorage.removeItem("spotify_state");
+            sessionStorage.removeItem("spotify_verifier");
+
+            const body = new URLSearchParams({
+                client_id: CLIENT_ID,
+                grant_type: "authorization_code",
+                code,
+                redirect_uri: REDIRECT_URI,
+                code_verifier: verifier
+            });
+
+            const response = await fetch("https://accounts.spotify.com/api/token", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error_description || data.error || "Token exchange failed");
+            }
+
+            saveTokens(data);
+        }
+
+        function saveTokens(data) {
+            accessToken = data.access_token;
+            expiresAt = Date.now() + data.expires_in * 1000;
+
+            if (data.refresh_token) {
+                refreshToken = data.refresh_token;
+            }
+
+            sessionStorage.setItem("spotify_access_token", accessToken);
+            sessionStorage.setItem("spotify_expires_at", String(expiresAt));
+
+            if (refreshToken) {
+                sessionStorage.setItem("spotify_refresh_token", refreshToken);
+            }
+        }
+
+        async function ensureToken() {
+            if (accessToken && Date.now() < expiresAt - 60000) {
+                return accessToken;
+            }
+
+            if (!refreshToken) {
+                if (accessToken && Date.now() < expiresAt) return accessToken;
+                throw new Error("Your login expired. Please sign in again.");
+            }
+
+            const body = new URLSearchParams({
+                client_id: CLIENT_ID,
+                grant_type: "refresh_token",
+                refresh_token: refreshToken
+            });
+
+            const response = await fetch("https://accounts.spotify.com/api/token", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error("Session expired. Please log in again.");
+            }
+
+            saveTokens(data);
+            return accessToken;
+        }
+
+        async function api(path, method = "GET", body = undefined) {
+            await ensureToken();
+
+            const response = await fetch(API + path, {
+                method,
+                headers: {
+                    "Authorization": "Bearer " + accessToken,
+                    ...(body !== undefined ? { "Content-Type": "application/json" } : {})
+                },
+                ...(body !== undefined ? { body: JSON.stringify(body) } : {})
+            });
+
+            if (response.status === 401) {
+                throw new Error("Spotify login expired. Log out and sign in again.");
+            }
+
+            if (response.status === 403) {
+                throw new Error(
+                    "Spotify denied this action. Check Premium eligibility, permissions, and app access."
+                );
+            }
+
+            if (response.status === 429) {
+                throw new Error("Spotify rate limit reached. Wait a moment and try again.");
+            }
+
+            if (response.status === 404) {
+                throw new Error("Playback device or track not available.");
+            }
+
+            if (!response.ok) {
+                let details = "";
+                try {
+                    const data = await response.json();
+                    details = data.error?.message || data.error_description || "";
+                } catch (_) { }
+
+                throw new Error(
+                    details || `Spotify API request failed (${response.status}).`
+                );
+            }
+
+            if (response.status === 204) return null;
+
+            return response.json();
+        }
+
+        function withDevice(path) {
+            const params = new URLSearchParams();
+            if (selectedDevice) params.set("device_id", selectedDevice);
+            const query = params.toString();
+            return path + (query ? "?" + query : "");
+        }
+
+        async function loadDevices() {
+            const data = await api("/me/player/devices");
+            const select = $("deviceSelect");
+            const previous = selectedDevice;
+
+            select.replaceChildren();
+
+            if (!data.devices || data.devices.length === 0) {
+                const option = document.createElement("option");
+                option.value = "";
+                option.textContent = "No Spotify devices found";
+                select.appendChild(option);
+                selectedDevice = "";
+                setStatus("Open Spotify on Phone A, start playing, then refresh devices.");
+                return;
+            }
+
+            for (const device of data.devices) {
+                const option = document.createElement("option");
+                option.value = device.id || "";
+                option.textContent =
+                    device.name + " · " + device.type +
+                    (device.is_active ? " · Active" : "") +
+                    (device.is_restricted ? " · Restricted" : "");
+
+                option.disabled = !device.id || device.is_restricted;
+                select.appendChild(option);
+            }
+
+            const active = data.devices.find(d => d.is_active && d.id);
+            const previousExists = data.devices.find(d => d.id === previous);
+
+            selectedDevice = previousExists?.id || active?.id ||
+                data.devices.find(d => d.id && !d.is_restricted)?.id || "";
+
+            select.value = selectedDevice;
+
+            if (!selectedDevice) {
+                setStatus("No controllable device found. Open Spotify on Phone A.", true);
+            } else {
+                setStatus("Connected. Device: " +
+                    data.devices.find(d => d.id === selectedDevice).name);
+            }
+        }
+
+        function formatTime(ms) {
+            const seconds = Math.max(0, Math.floor((ms || 0) / 1000));
+            return Math.floor(seconds / 60) + ":" +
+                String(seconds % 60).padStart(2, "0");
+        }
+
+        function renderPlayback(data) {
+            playback = data;
+
+            if (!data || !data.item) {
+                $("trackTitle").textContent = "Nothing playing";
+                $("artist").textContent = "Start Spotify on Phone A";
+                $("cover").classList.add("hidden");
+                $("placeholder").classList.remove("hidden");
+                $("playBtn").textContent = "▶";
+                $("progress").value = 0;
+                $("currentTime").textContent = "0:00";
+                $("duration").textContent = "0:00";
+                return;
+            }
+
+            const item = data.item;
+            $("trackTitle").textContent = item.name || "Unknown track";
+            $("artist").textContent =
+                (item.artists || []).map(a => a.name).join(", ") ||
+                item.show?.name || "Unknown artist";
+
+            const imageUrl = item.album?.images?.[0]?.url;
+
+            if (imageUrl) {
+                $("cover").src = imageUrl;
+                $("cover").classList.remove("hidden");
+                $("placeholder").classList.add("hidden");
+            } else {
+                $("cover").classList.add("hidden");
+                $("placeholder").classList.remove("hidden");
+            }
+
+            $("playBtn").textContent = data.is_playing ? "Ⅱ" : "▶";
+
+            const duration = item.duration_ms || 0;
+            const position = Math.min(data.progress_ms || 0, duration);
+
+            $("progress").max = Math.max(1, duration);
+            if (!seeking) $("progress").value = position;
+
+            $("currentTime").textContent = formatTime(position);
+            $("duration").textContent = formatTime(duration);
+        }
+
+        async function refreshPlayback() {
+            const data = await api("/me/player");
+
+            renderPlayback(data);
+
+            if (data?.device?.id && !selectedDevice) {
+                selectedDevice = data.device.id;
+                $("deviceSelect").value = selectedDevice;
+            }
+
+            if (data?.device?.name) {
+                setStatus(
+                    (data.is_playing ? "Playing" : "Paused") +
+                    " · " + data.device.name
+                );
+            } else if (!data) {
+                setStatus("No active playback. Open Spotify on Phone A.");
+            }
+        }
+
+        async function refreshAll() {
+            try {
+                await loadDevices();
+                await refreshPlayback();
+            } catch (error) {
+                setStatus(error.message, true);
+            }
+        }
+
+        async function command(label, action) {
+            if (busy) return;
+
+            busy = true;
+            const buttons = document.querySelectorAll(".control, .play, .seek");
+            buttons.forEach(button => button.disabled = true);
+
+            try {
+                setStatus("Sending: " + label + "…");
+
+                await action();
+
+                setStatus("Command accepted: " + label);
+                await refreshPlayback();
+            } catch (error) {
+                setStatus(error.message, true);
+            } finally {
+                busy = false;
+                buttons.forEach(button => button.disabled = false);
+            }
+        }
+
+        function requireDevice() {
+            if (!selectedDevice) {
+                throw new Error("Select an available Spotify device first.");
+            }
+        }
+
+        async function togglePlay() {
+            requireDevice();
+
+            if (playback?.is_playing) {
+                await api(withDevice("/me/player/pause"), "PUT");
+            } else {
+                await api(withDevice("/me/player/play"), "PUT");
+            }
+        }
+
+        async function seekBy(delta) {
+            requireDevice();
+
+            const duration = playback?.item?.duration_ms || 0;
+            const current = playback?.progress_ms || 0;
+            const target = Math.max(0, Math.min(duration, current + delta));
+
+            await api(
+                withDevice("/me/player/seek?position_ms=" + Math.round(target)),
+                "PUT"
+            );
+        }
+
+        async function skipTrack(direction) {
+            requireDevice();
+            const endpoint = direction === "next"
+                ? "/me/player/next"
+                : "/me/player/previous";
+
+            await api(withDevice(endpoint), "POST");
+        }
+
+        async function seekToPosition() {
+            if (!playback?.item) return;
+
+            const position = Number($("progress").value);
+            const duration = playback.item.duration_ms || 0;
+
+            try {
+                await api(
+                    withDevice("/me/player/seek?position_ms=" +
+                        Math.round(Math.min(duration, Math.max(0, position)))),
+                    "PUT"
+                );
+                setStatus("Position updated.");
+            } catch (error) {
+                setStatus(error.message, true);
+            }
+        }
+
+        function startPolling() {
+            stopPolling();
+
+            pollTimer = setInterval(async () => {
+                try {
+                    await refreshPlayback();
+                } catch (error) {
+                    setStatus(error.message, true);
+                }
+            }, 5000);
+
+            progressTimer = setInterval(() => {
+                if (!seeking && playback?.is_playing && playback.item) {
+                    playback.progress_ms = Math.min(
+                        (playback.progress_ms || 0) + 500,
+                        playback.item.duration_ms || Infinity
+                    );
+
+                    $("currentTime").textContent = formatTime(playback.progress_ms);
+                    $("progress").value = playback.progress_ms;
+                }
+            }, 500);
+        }
+
+        function stopPolling() {
+            clearInterval(pollTimer);
+            clearInterval(progressTimer);
+            pollTimer = null;
+            progressTimer = null;
+        }
+
+        function clearSession() {
+            stopPolling();
+
+            accessToken = null;
+            refreshToken = null;
+            expiresAt = 0;
+            selectedDevice = "";
+            playback = null;
+
+            sessionStorage.removeItem("spotify_access_token");
+            sessionStorage.removeItem("spotify_refresh_token");
+            sessionStorage.removeItem("spotify_expires_at");
+            sessionStorage.removeItem("spotify_verifier");
+            sessionStorage.removeItem("spotify_state");
+
+            showPlayer(false);
+        }
+
+        async function initialize() {
+            $("loginBtn").addEventListener("click", login);
+
+            $("playBtn").addEventListener("click", () =>
+                command("Play/Pause", togglePlay));
+
+            $("prevBtn").addEventListener("click", () =>
+                command("Previous track", () => skipTrack("previous")));
+
+            $("nextBtn").addEventListener("click", () =>
+                command("Next track", () => skipTrack("next")));
+
+            $("backBtn").addEventListener("click", () =>
+                command("Back 10 seconds", () => seekBy(-10000)));
+
+            $("forwardBtn").addEventListener("click", () =>
+                command("Forward 10 seconds", () => seekBy(10000)));
+
+            $("refreshBtn").addEventListener("click", refreshAll);
+
+            $("logoutBtn").addEventListener("click", () => {
+                clearSession();
+                history.replaceState({}, "", REDIRECT_URI);
+                setStatus("Logged out. Sign in again to control Spotify.");
+            });
+
+            $("deviceSelect").addEventListener("change", async event => {
+                selectedDevice = event.target.value;
+
+                if (!selectedDevice) return;
+
+                try {
+                    setStatus("Selecting Spotify device…");
+
+                    await api("/me/player", "PUT", {
+                        device_ids: [selectedDevice],
+                        play: false
+                    });
+
+                    setStatus("Device selected.");
+                    await refreshPlayback();
+                } catch (error) {
+                    setStatus(error.message, true);
+                }
+            });
+
+            $("progress").addEventListener("input", event => {
+                seeking = true;
+                $("currentTime").textContent = formatTime(Number(event.target.value));
+            });
+
+            $("progress").addEventListener("change", async () => {
+                await seekToPosition();
+                seeking = false;
+                await refreshPlayback().catch(() => { });
+            });
+
+            $("progress").addEventListener("pointerdown", () => seeking = true);
+            $("progress").addEventListener("pointerup", () => {
+                // Keep seeking active until the change event finishes.
+            });
+
+            const params = new URLSearchParams(location.search);
+            const error = params.get("error");
+            const code = params.get("code");
+
+            if (error) {
+                history.replaceState({}, "", REDIRECT_URI);
+                setStatus("Spotify login cancelled or denied: " + error, true);
+                return;
+            }
+
+            try {
+                if (code) {
+                    history.replaceState({}, "", REDIRECT_URI);
+                    setStatus("Completing Spotify login…");
+                    await exchangeCode(code);
+                } else {
+                    accessToken = sessionStorage.getItem("spotify_access_token");
+                    refreshToken = sessionStorage.getItem("spotify_refresh_token");
+                    expiresAt = Number(sessionStorage.getItem("spotify_expires_at") || 0);
+                }
+
+                if (!accessToken) return;
+
+                showPlayer(true);
+                setStatus("Loading Spotify devices…");
+
+                await ensureToken();
+                await refreshAll();
+                startPolling();
+            } catch (error) {
+                setStatus(error.message, true);
+                if (/login|session expired|verification failed/i.test(error.message)) {
+                    clearSession();
+                }
+            }
+        }
+
+        initialize();
+    </script>
+</body>
+
+</html>
